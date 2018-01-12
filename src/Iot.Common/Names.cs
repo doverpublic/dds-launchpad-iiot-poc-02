@@ -7,6 +7,9 @@ namespace Iot.Common
 {
     public static class Names
     {
+        public const string EventKeyFieldDeviceId = "DeviceID";
+        public const string EventKeyFieldTenantId = "TenantID";
+
         public const string EventsProcessorApplicationPrefix = "fabric:/Launchpad.Iot.EventsProcessor";
         public const string EventsProcessorApplicationTypeName = "LaunchpadIotEventsProcessorApplicationType";
         public const string EventsProcessorRouterServiceName = "RouterService";

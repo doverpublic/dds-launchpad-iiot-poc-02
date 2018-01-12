@@ -86,7 +86,7 @@ namespace Iot.Common
             builder.Scheme = String.IsNullOrEmpty(this.Scheme) ? "http" : this.Scheme;
             builder.Host = String.IsNullOrEmpty(this.Host) ? "fabric" : this.Host;
             builder.Path = this.ServiceName.AbsolutePath.Trim('/') + '/';
-            ;
+            
             string partitionKey = this.PartitionKey == null || this.PartitionKey.Kind == ServicePartitionKind.Singleton
                 ? String.Empty
                 : this.PartitionKey.Value.ToString();

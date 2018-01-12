@@ -111,17 +111,27 @@ namespace Launchpad.Iot.EventsProcessor.RouterService
                             {
                                 if (eventData == null)
                                 {
+                                    ServiceEventSource.Current.ServiceMessage( this.Context, "No event data available on hub '{0}'",
+                                                                                eventHubReceiver.Name );
                                     continue;
                                 }
+                                else
+                                {
+                                    ServiceEventSource.Current.ServiceMessage(this.Context, "Received event data from hub '{0}' - Partition '{1}' Sequence # '{2}'",
+                                                                                eventHubReceiver.Name, eventData.PartitionKey, eventData.SequenceNumber );
+                                }
 
-                                string tenantId = (string)eventData.Properties["TenantID"];
-                                string deviceId = (string)eventData.Properties["DeviceID"];
+                                string tenantId = (string)eventData.Properties[ Names.EventKeyFieldTenantId ];
+                                string deviceId = (string)eventData.Properties[ Names.EventKeyFieldDeviceId ];
 
                                 // This is the named service instance of the tenant data service that the event should be sent to.
                                 // The tenant ID is part of the named service instance name.
                                 // The incoming device data stream specifie which tenant the data belongs to.
                                 Uri tenantServiceName = new Uri($"{Names.InsightApplicationNamePrefix}/{tenantId}/{Names.InsightDataServiceName}");
                                 long tenantServicePartitionKey = FnvHash.Hash(deviceId);
+
+                                ServiceEventSource.Current.ServiceMessage(this.Context, "About to post data to Insight Data Service from device '{0}' to tenant '{1}' - partitionKey '{2}' - serviceName '{3}'",
+                                                                            deviceId, tenantId, tenantServicePartitionKey, tenantServiceName );
 
                                 // The tenant data service exposes an HTTP API.
                                 // For incoming device events, the URL is /api/events/{deviceId}
@@ -131,6 +141,9 @@ namespace Launchpad.Iot.EventsProcessor.RouterService
                                     .SetPartitionKey(tenantServicePartitionKey)
                                     .SetServicePathAndQuery($"/api/events/{deviceId}")
                                     .Build();
+
+                                ServiceEventSource.Current.ServiceMessage(this.Context, "Ready to post data to Insight Data Service from device '{0}' to tenant '{1}' - partitionKey '{2}' - serviceName '{3}' - url '{4}'",
+                                                                            deviceId, tenantId, tenantServicePartitionKey, tenantServiceName, postUrl.PathAndQuery );
 
                                 // The device stream payload isn't deserialized and buffered in memory here.
                                 // Instead, we just can just hook the incoming stream from Iot Hub right into the HTTP request stream.
@@ -289,7 +302,7 @@ namespace Launchpad.Iot.EventsProcessor.RouterService
                     // start with the current time.
                     ServiceEventSource.Current.ServiceMessage(
                         this.Context,
-                        "Creating EventHub listener on partition {0} with offset {1}",
+                        "Creating EventHub listener on partition {0} with offset {1} - Starting service",
                         eventHubPartitionId,
                         DateTime.UtcNow);
 

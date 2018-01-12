@@ -178,8 +178,8 @@ namespace Launchpad.Iot.DeviceEmulator
                 }
 
                 message = new Microsoft.Azure.Devices.Client.Message(stream.GetBuffer());
-                message.Properties.Add("Insight Application UID", tenant);
-                message.Properties.Add("Device ID", deviceId);
+                message.Properties.Add( Names.EventKeyFieldTenantId, tenant );
+                message.Properties.Add( Names.EventKeyFieldDeviceId, deviceId );
 
                 await deviceClient.SendEventAsync(message);
 

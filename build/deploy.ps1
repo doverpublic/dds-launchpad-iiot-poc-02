@@ -132,12 +132,14 @@ if ($UsePublishProfileClusterConnection)
 }
 else
 {
+	echo "Open cluster connection to local cluster"
     # This is to force the connection to the local cluster if still not connected
     Connect-ServiceFabricCluster 
 }
 
 try
 {
+	echo "Test the cluster connection"
     Test-ServiceFabricClusterConnection
 }
 catch
